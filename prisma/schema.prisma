@@ -11,8 +11,16 @@ datasource db {
 }
 
 model Book {
-  id     Int    @id @default(autoincrement())
-  author String
-  title  String
-  isbn   String
+  id           Int       @id @default(autoincrement())
+  author       String
+  title        String
+  isbn         String
+  publisher    Publisher @relation(fields: [publisher_id], references: [id])
+  publisher_id String
+}
+
+model Publisher {
+  id    String @id @default(uuid())
+  name  String
+  books Book[]
 }

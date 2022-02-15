@@ -4,9 +4,9 @@ In this tutorial, you will learn a brief guide about prisma, a database technolo
 
 ## Tech Stacks
 1. Express
-2. Prisma
+2. Prisma (sqlite)
 3. Typescript
 
 ## Tools & Libraries
 1. Nodemon
-(will be added more in part 2)
+2. Husky
