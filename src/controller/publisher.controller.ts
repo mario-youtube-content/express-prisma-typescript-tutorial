@@ -2,90 +2,95 @@ import { RequestHandler } from "express";
 import Controller from "../core/controller";
 import db from "../core/database";
 
-class BookController extends Controller {
-	protected model = db.book;
+class PublisherController extends Controller {
+	protected model = db.publisher;
 
 	constructor() {
-		super('books')
+		super('publishers')
 	}
 
-	// GET /api/book
+	// GET /api/publisher
 	getAll: RequestHandler = async (req, res) => {
 		try {
-			const books = await this.model.findMany({
+			const items = await this.model.findMany({
 				...req.paginationQuery,
 				include: {
-					publisher: true
+					books: true,
+					_count: {
+						select: {
+							books: true
+						}
+					}
 				}
 			});
-			const numOfItems = await this.model.count()
-			const totalPages = Math.ceil(numOfItems / req.paginationDetail.itemsPerPage)
-			res.send({ items: books, ...req.paginationDetail, totalPages })
+			const numOfItems = await this.model.count();
+			const totalPages = Math.ceil(numOfItems / req.paginationQuery.take)
+			res.send({ items, ...req.paginationDetail, totalPages })
 		}
 		catch (err) {
 			res.status(400).send("Error Occured")
 		}
 	}
 
-	// GET /api/book/:id
+	// GET /api/publisher/:id
 	getOne: RequestHandler = async (req, res) => {
-		const id = Number(req.params.id);
+		const id = String(req.params.id);
 		if (!id) {
 			return res.status(400).send({
 				id: "Id is not defined"
 			})
 		}
 		try {
-			const book = await this.model.findUnique({
+			const publisher = await this.model.findUnique({
 				where: {
 					id
 				}
 			})
-			return res.send(book)
+			return res.send(publisher)
 		}
 		catch (err) {
 			return res.status(400).send("Error occured")
 		}
 	}
 
-	// POST /api/book
+	// POST /api/publisher
 	create: RequestHandler = async (req, res) => {
 		const body = req.body;
 		try {
-			const book = await this.model.create({
+			const publisher = await this.model.create({
 				data: body
 			})
-			return res.send(book)
+			return res.send(publisher)
 		}
 		catch (err) {
 			return res.status(400).send("Error occured")
 		}
 	}
 
-	// DELETE /api/book/:id
+	// DELETE /api/publisher/:id
 	delete: RequestHandler = async (req, res) => {
-		const id = Number(req.params.id);
+		const id = String(req.params.id);
 		if (!id) {
 			return res.status(400).send({
 				id: "Id is not defined"
 			})
 		}
 		try {
-			const book = await this.model.delete({
+			const publisher = await this.model.delete({
 				where: {
 					id
 				}
 			})
-			return res.send(book)
+			return res.send(publisher)
 		}
 		catch (err) {
 			return res.status(400).send("Error occured")
 		}
 	}
 
-	// UPDATE /api/book/:id
+	// UPDATE /api/publisher/:id
 	update: RequestHandler = async (req, res) => {
-		const id = Number(req.params.id);
+		const id = String(req.params.id);
 		if (!id) {
 			return res.status(400).send({
 				id: "Id is not defined"
@@ -93,13 +98,13 @@ class BookController extends Controller {
 		}
 		const body = req.body;
 		try {
-			const book = await this.model.update({
+			const publisher = await this.model.update({
 				where: {
-					id: Number(req.params.id)
+					id
 				},
 				data: body
 			})
-			return res.send(book)
+			return res.send(publisher)
 		}
 		catch (err) {
 			return res.status(400).send("Error occured")
@@ -107,4 +112,4 @@ class BookController extends Controller {
 	}
 }
 
-export default BookController
+export default PublisherController
